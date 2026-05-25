@@ -391,7 +391,7 @@ with tab_home:
         text=np.round(pivot.values, 1),
         texttemplate="%{text}",
         hovertemplate="Pays: %{y}<br>Année: %{x}<br>MM % PIB: %{z:.2f}<extra></extra>",
-        colorbar=dict(title="% PIB", tickfont=dict(color="#c8e0ff"), titlefont=dict(color="#c8e0ff"))
+        colorbar=dict(title=dict(text="% PIB", font=dict(color="#c8e0ff")), tickfont=dict(color="#c8e0ff"))
     ))
     apply_layout(fig_hm, "Transactions Mobile Money (% du PIB) — Vue d'ensemble UEMOA 2014–2025")
     fig_hm.update_xaxes(type="category")
@@ -627,9 +627,8 @@ with tab_explore:
             zmid=0,
             text=np.round(corr_matrix.values, 2),
             texttemplate="%{text}",
-            colorbar=dict(title="Corrélation",
-                          tickfont=dict(color="#c8e0ff"),
-                          titlefont=dict(color="#c8e0ff")),
+            colorbar=dict(title=dict(text="Corrélation", font=dict(color="#c8e0ff")),
+                          tickfont=dict(color="#c8e0ff")),
             hovertemplate="%{y} × %{x}<br>r = %{z:.3f}<extra></extra>"
         ))
         apply_layout(fig_corr, "Matrice de corrélation de Pearson — Variables du panel UEMOA",
@@ -1300,7 +1299,7 @@ with tab_ml:
                     color=results_df["R² Test"],
                     colorscale="Blues",
                     showscale=True,
-                    colorbar=dict(title="R²", tickfont=dict(color="#c8e0ff"))
+                    colorbar=dict(title=dict(text="R²", font=dict(color="#c8e0ff")), tickfont=dict(color="#c8e0ff"))
                 ),
                 text=[f"{v:.3f}" for v in results_df["R² Test"]],
                 textposition="outside"
