@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 # ─── Configuration de la page ────────────────────────────────
 st.set_page_config(
     page_title="UEMOA Mobile Money Dashboard",
-    page_icon="📱",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -240,14 +240,14 @@ def apply_layout(fig, title="", **kwargs):
 with st.sidebar:
     st.markdown("""
     <div style='text-align:center; padding: 10px 0 20px 0;'>
-        <div style='font-size:2.5rem;'>📱</div>
+        <div style='font-size:2.5rem;'></div>
         <div style='font-size:1rem; font-weight:700; color:#64d8ff; margin-top:4px;'>UEMOA Mobile Money</div>
         <div style='font-size:0.72rem; color:#506080; margin-top:2px;'>Tableau de bord — Mémoire ISE</div>
     </div>
     <hr style='border-color:rgba(100,180,255,0.1); margin-bottom:20px;'>
     """, unsafe_allow_html=True)
 
-    st.markdown("**🌍 Filtres globaux**")
+    st.markdown("** Filtres globaux**")
     sel_countries = st.multiselect("Pays", countries, default=countries,
                                    help="Sélectionner les pays à afficher")
     sel_years = st.slider("Période", min_value=min(years), max_value=max(years),
@@ -270,7 +270,7 @@ df_f = df[df["Country"].isin(sel_countries) &
 
 # ─── Navigation ──────────────────────────────────────────────
 tab_home, tab_explore, tab_eco, tab_ml, tab_about = st.tabs([
-    "🏠  Accueil", "🔍  Exploration", "📊  Analyse Économétrique", "🤖  Machine Learning", "ℹ️  À propos"
+    "  Accueil", "  Exploration", "  Analyse Économétrique", "  Machine Learning", "  À propos"
 ])
 
 # ══════════════════════════════════════════════════════════════
@@ -293,11 +293,11 @@ with tab_home:
     last_year   = df_f["Year"].max()
 
     for col, icon, label, value, delta in [
-        (k1, "📈", "Croissance moy. PIB", f"{mean_growth:.2f}%", "Annuelle"),
-        (k2, "📱", "MM Trans. moy. (% PIB)", f"{mean_mm:.1f}%", "Proxy d'adoption"),
-        (k3, "💰", "Volume MM (Mds FCFA)", f"{total_vol:.0f}", "Cumulé"),
-        (k4, "📋", "Observations", str(n_obs), "Données de panel"),
-        (k5, "📅", "Dernière année", str(last_year), "Données disponibles"),
+        (k1, "", "Croissance moy. PIB", f"{mean_growth:.2f}%", "Annuelle"),
+        (k2, "", "MM Trans. moy. (% PIB)", f"{mean_mm:.1f}%", "Proxy d'adoption"),
+        (k3, "", "Volume MM (Mds FCFA)", f"{total_vol:.0f}", "Cumulé"),
+        (k4, "", "Observations", str(n_obs), "Données de panel"),
+        (k5, "", "Dernière année", str(last_year), "Données disponibles"),
     ]:
         col.markdown(f"""
         <div class='kpi-card'>
@@ -320,7 +320,7 @@ with tab_home:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='section-title'>📈 Évolution conjointe — Mobile Money & Croissance du PIB</div>",
+    st.markdown("<div class='section-title'> Évolution conjointe — Mobile Money & Croissance du PIB</div>",
                 unsafe_allow_html=True)
 
     # Graphique d'évolution conjointe (double axe)
@@ -355,7 +355,7 @@ with tab_home:
     st.plotly_chart(fig_joint, use_container_width=True)
 
     # Évolution par pays
-    st.markdown("<div class='section-title'>🌍 Évolution par pays</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'> Évolution par pays</div>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
 
     with c1:
@@ -381,7 +381,7 @@ with tab_home:
         st.plotly_chart(fig_gdp, use_container_width=True)
 
     # Heatmap MM x Pays x Année
-    st.markdown("<div class='section-title'>🗺️ Heatmap — Mobile Money (% PIB)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'> Heatmap — Mobile Money (% PIB)</div>", unsafe_allow_html=True)
     pivot = df_f.pivot_table(index="Country", columns="Year", values="MM Trans. % GDP")
     fig_hm = go.Figure(data=go.Heatmap(
         z=pivot.values,
@@ -411,7 +411,7 @@ with tab_home:
 # ONGLET 2 — EXPLORATION
 # ══════════════════════════════════════════════════════════════
 with tab_explore:
-    st.markdown("<div class='hero-title' style='font-size:1.8rem;'>🔍 Exploration des données</div>",
+    st.markdown("<div class='hero-title' style='font-size:1.8rem;'> Exploration des données</div>",
                 unsafe_allow_html=True)
 
     num_cols  = [c for c in df_f.columns if c not in ["Country", "ISO3", "Year"]
@@ -419,7 +419,7 @@ with tab_explore:
     cat_cols_base = ["Country", "Year"]
 
     # ── Sélection de la variable et de son type ────────────────
-    st.markdown("<div class='section-title'>⚙️ Paramétrage de l'analyse</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'> Paramétrage de l'analyse</div>", unsafe_allow_html=True)
     all_cols = cat_cols_base + num_cols
 
     col_sel, col_type = st.columns([2, 1])
@@ -443,13 +443,13 @@ with tab_explore:
         mode_val  = freq.iloc[0]["Modalité"]
         n_unique  = serie.nunique()
 
-        st.markdown("<div class='section-title'>📊 Statistiques descriptives — Variable qualitative</div>",
+        st.markdown("<div class='section-title'> Statistiques descriptives — Variable qualitative</div>",
                     unsafe_allow_html=True)
         m1, m2, m3 = st.columns(3)
         for col_m, icon, lab, val in [
-            (m1, "🏆", "Mode (valeur la + fréquente)", mode_val),
+            (m1, "", "Mode (valeur la + fréquente)", mode_val),
             (m2, "🔢", "Nombre de modalités uniques", str(n_unique)),
-            (m3, "📋", "Nb. total d'observations", str(len(serie))),
+            (m3, "", "Nb. total d'observations", str(len(serie))),
         ]:
             col_m.markdown(f"""
             <div class='kpi-card'>
@@ -459,7 +459,7 @@ with tab_explore:
             </div>""", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<div class='section-title'>📋 Tableau de fréquences (Tri à plat)</div>",
+        st.markdown("<div class='section-title'> Tableau de fréquences (Tri à plat)</div>",
                     unsafe_allow_html=True)
         st.dataframe(freq.style.format({"Fréquence (%)": "{:.2f}%"}),
                      use_container_width=True, height=300)
@@ -505,7 +505,7 @@ with tab_explore:
         # ── STATS QUANTITATIVES ─────────────────────────────────
         serie = df_f[selected_var].dropna()
 
-        st.markdown("<div class='section-title'>📊 Statistiques descriptives — Variable quantitative</div>",
+        st.markdown("<div class='section-title'> Statistiques descriptives — Variable quantitative</div>",
                     unsafe_allow_html=True)
         s1, s2, s3, s4 = st.columns(4)
         stats_vals = [
@@ -538,7 +538,7 @@ with tab_explore:
         </div>""", unsafe_allow_html=True)
 
         # Table descriptive complète
-        st.markdown("<div class='section-title'>📋 Table descriptive complète</div>",
+        st.markdown("<div class='section-title'> Table descriptive complète</div>",
                     unsafe_allow_html=True)
         desc = serie.describe().reset_index()
         desc.columns = ["Statistique", "Valeur"]
@@ -549,7 +549,7 @@ with tab_explore:
         desc["Valeur"] = desc["Valeur"].round(4)
         st.dataframe(desc, use_container_width=True, hide_index=True)
 
-        st.markdown("<div class='section-title'>📈 Graphiques</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'> Graphiques</div>", unsafe_allow_html=True)
         g1, g2 = st.columns(2)
 
         with g1:
@@ -604,7 +604,7 @@ with tab_explore:
 
     # ── Sous-onglet : Matrice de corrélation & Heatmap ─────────
     st.markdown("---")
-    st.markdown("<div class='section-title'>🔗 Matrice de corrélation & Heatmap</div>",
+    st.markdown("<div class='section-title'> Matrice de corrélation & Heatmap</div>",
                 unsafe_allow_html=True)
 
     corr_vars = st.multiselect(
@@ -637,7 +637,7 @@ with tab_explore:
         st.plotly_chart(fig_corr, use_container_width=True)
 
         # Corrélation avec PIB
-        st.markdown("<div class='section-title'>📊 Corrélations avec la croissance du PIB</div>",
+        st.markdown("<div class='section-title'> Corrélations avec la croissance du PIB</div>",
                     unsafe_allow_html=True)
         if "GDP Growth (% annual)" in corr_vars:
             corr_gdp = corr_matrix["GDP Growth (% annual)"].drop("GDP Growth (% annual)").sort_values()
@@ -671,7 +671,7 @@ with tab_explore:
 # ONGLET 3 — ANALYSE ÉCONOMÉTRIQUE
 # ══════════════════════════════════════════════════════════════
 with tab_eco:
-    st.markdown("<div class='hero-title' style='font-size:1.8rem;'>📊 Analyse Économétrique de Panel</div>",
+    st.markdown("<div class='hero-title' style='font-size:1.8rem;'> Analyse Économétrique de Panel</div>",
                 unsafe_allow_html=True)
     st.markdown("""
     <div class='insight-box' style='margin-bottom:20px;'>
@@ -705,14 +705,14 @@ with tab_eco:
         df_eco_clean = df_eco.dropna(subset=variables_eco)
 
         # ── Statistiques descriptives ─────────────────────────
-        st.markdown("<div class='section-title'>📋 Statistiques descriptives — Variables clés</div>",
+        st.markdown("<div class='section-title'> Statistiques descriptives — Variables clés</div>",
                     unsafe_allow_html=True)
         desc = df_eco_clean[variables_eco].describe().T.round(3)
         desc.index.name = "Variable"
         st.dataframe(desc.style.format("{:.3f}"), use_container_width=True)
 
         # Évolution des variables de contrôle
-        st.markdown("<div class='section-title'>📈 Évolution des variables de contrôle</div>",
+        st.markdown("<div class='section-title'> Évolution des variables de contrôle</div>",
                     unsafe_allow_html=True)
         ctrl_choice = st.selectbox("Variable de contrôle à visualiser",
                                    ["Investment % GDP", "Trade % GDP", "Inflation (%)",
@@ -725,7 +725,7 @@ with tab_eco:
         st.plotly_chart(fig_ctrl, use_container_width=True)
 
         # ── Relation MM vs Croissance ──────────────────────────
-        st.markdown("<div class='section-title'>🔗 Relation Mobile Money & Croissance</div>",
+        st.markdown("<div class='section-title'> Relation Mobile Money & Croissance</div>",
                     unsafe_allow_html=True)
         fig_scat = px.scatter(df_eco_clean, x="MM Trans. % GDP", y="GDP Growth (% annual)",
                               color="Country", size_max=14,
@@ -738,7 +738,7 @@ with tab_eco:
         st.plotly_chart(fig_scat, use_container_width=True)
 
         # ── Tests de stationnarité (ADF par pays) ─────────────
-        st.markdown("<div class='section-title'>🧪 Tests de stationnarité (ADF individuel par pays)</div>",
+        st.markdown("<div class='section-title'> Tests de stationnarité (ADF individuel par pays)</div>",
                     unsafe_allow_html=True)
         adf_var = st.selectbox("Variable à tester (ADF)", variables_eco)
 
@@ -782,7 +782,7 @@ with tab_eco:
         </div>""", unsafe_allow_html=True)
 
         # ── Pooled OLS ────────────────────────────────────────
-        st.markdown("<div class='section-title'>📐 Modèle 1 — Pooled OLS (MCO Groupé)</div>",
+        st.markdown("<div class='section-title'> Modèle 1 — Pooled OLS (MCO Groupé)</div>",
                     unsafe_allow_html=True)
 
         formula_ols = ('Q("GDP Growth (% annual)") ~ Q("MM Trans. % GDP") + '
@@ -836,7 +836,7 @@ with tab_eco:
         </div>""", unsafe_allow_html=True)
 
         # ── Effets Fixes & Aléatoires ─────────────────────────
-        st.markdown("<div class='section-title'>📐 Modèles 2 & 3 — Effets Fixes (FE) et Aléatoires (RE)</div>",
+        st.markdown("<div class='section-title'> Modèles 2 & 3 — Effets Fixes (FE) et Aléatoires (RE)</div>",
                     unsafe_allow_html=True)
 
         try:
@@ -920,7 +920,7 @@ with tab_eco:
             st.plotly_chart(fig_coef_comp, use_container_width=True)
 
             # ── Test de Hausman ───────────────────────────────
-            st.markdown("<div class='section-title'>🔬 Test de Hausman (FE vs RE)</div>",
+            st.markdown("<div class='section-title'> Test de Hausman (FE vs RE)</div>",
                         unsafe_allow_html=True)
             b_fe  = model_fe.params
             b_re  = model_re.params
@@ -954,7 +954,7 @@ with tab_eco:
                 st.warning(f"Test de Hausman : calcul impossible ({e})")
 
             # ── Test de Pesaran CD ────────────────────────────
-            st.markdown("<div class='section-title'>🔬 Test de Dépendance Transversale (Pesaran CD)</div>",
+            st.markdown("<div class='section-title'> Test de Dépendance Transversale (Pesaran CD)</div>",
                         unsafe_allow_html=True)
 
             fitted_series = model_fe.fitted_values.squeeze()
@@ -1001,7 +1001,7 @@ with tab_eco:
                 </div>""", unsafe_allow_html=True)
 
             # ── Résidus du modèle FE ──────────────────────────
-            st.markdown("<div class='section-title'>🔬 Diagnostic des résidus (Effets Fixes)</div>",
+            st.markdown("<div class='section-title'> Diagnostic des résidus (Effets Fixes)</div>",
                         unsafe_allow_html=True)
             residuals_vals = residuals_fe.reset_index()
             residuals_vals.columns = ["Country", "Year", "Résidu"]
@@ -1022,7 +1022,7 @@ with tab_eco:
                 st.plotly_chart(fig_res_box, use_container_width=True)
 
             # ── GMM ───────────────────────────────────────────
-            st.markdown("<div class='section-title'>📐 Modèle 4 — GMM Arellano-Bond (2SLS approché)</div>",
+            st.markdown("<div class='section-title'> Modèle 4 — GMM Arellano-Bond (2SLS approché)</div>",
                         unsafe_allow_html=True)
 
             df_gmm = df_eco_clean.copy().sort_values(["Country", "Year"])
@@ -1082,7 +1082,7 @@ with tab_eco:
             </div>""", unsafe_allow_html=True)
 
             # ── Synthèse des modèles ──────────────────────────
-            st.markdown("<div class='section-title'>🏆 Synthèse comparative des modèles</div>",
+            st.markdown("<div class='section-title'> Synthèse comparative des modèles</div>",
                         unsafe_allow_html=True)
             synth_data = {
                 "Modèle": ["Pooled OLS", "Effets Fixes (FE)",
@@ -1163,7 +1163,7 @@ with tab_eco:
 # ONGLET 4 — MACHINE LEARNING
 # ══════════════════════════════════════════════════════════════
 with tab_ml:
-    st.markdown("<div class='hero-title' style='font-size:1.8rem;'>🤖 Analyse Machine Learning</div>",
+    st.markdown("<div class='hero-title' style='font-size:1.8rem;'> Analyse Machine Learning</div>",
                 unsafe_allow_html=True)
     st.markdown("""
     <div class='insight-box' style='margin-bottom:20px;'>
@@ -1204,7 +1204,7 @@ with tab_ml:
             X_tr_sc = pd.DataFrame(scaler.fit_transform(X_train), columns=features_ml)
             X_te_sc = pd.DataFrame(scaler.transform(X_test), columns=features_ml)
 
-            st.markdown("<div class='section-title'>⚙️ Paramètres du modèle</div>",
+            st.markdown("<div class='section-title'> Paramètres du modèle</div>",
                         unsafe_allow_html=True)
             c1m, c2m, c3m = st.columns(3)
             c1m.metric("Observations (train)", str(len(X_train)))
@@ -1228,7 +1228,7 @@ with tab_ml:
                 pass
 
             # ── Validation croisée ────────────────────────────
-            st.markdown("<div class='section-title'>🔄 Validation croisée (5 folds)</div>",
+            st.markdown("<div class='section-title'> Validation croisée (5 folds)</div>",
                         unsafe_allow_html=True)
 
             kfold = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -1260,7 +1260,7 @@ with tab_ml:
             st.plotly_chart(fig_cv, use_container_width=True)
 
             # ── Entraînement & Évaluation finale ─────────────
-            st.markdown("<div class='section-title'>🏆 Évaluation finale sur le jeu de test</div>",
+            st.markdown("<div class='section-title'> Évaluation finale sur le jeu de test</div>",
                         unsafe_allow_html=True)
 
             final_results = []
@@ -1309,14 +1309,14 @@ with tab_ml:
 
             st.markdown(f"""
             <div class='kpi-card' style='margin:12px 0;'>
-                <div class='kpi-icon'>🏆</div>
+                <div class='kpi-icon'></div>
                 <div class='kpi-label'>Meilleur modèle</div>
                 <div class='kpi-value' style='font-size:1.4rem;'>{best_name}</div>
                 <div class='kpi-delta'>R² Test = {results_df.iloc[0]['R² Test']:.4f} · RMSE = {results_df.iloc[0]['RMSE Test']:.4f}</div>
             </div>""", unsafe_allow_html=True)
 
             # ── Importance des variables ──────────────────────
-            st.markdown("<div class='section-title'>🎯 Importance des variables — Meilleur modèle</div>",
+            st.markdown("<div class='section-title'> Importance des variables — Meilleur modèle</div>",
                         unsafe_allow_html=True)
 
             if hasattr(best_model, "feature_importances_"):
@@ -1367,7 +1367,7 @@ with tab_ml:
                 st.plotly_chart(fig_perm, use_container_width=True)
 
             # ── Prédictions vs Réel ───────────────────────────
-            st.markdown("<div class='section-title'>🔮 Prédictions vs Valeurs réelles</div>",
+            st.markdown("<div class='section-title'> Prédictions vs Valeurs réelles</div>",
                         unsafe_allow_html=True)
 
             y_pred_best = best_model.predict(X_te_sc)
@@ -1392,7 +1392,7 @@ with tab_ml:
             st.plotly_chart(fig_pred, use_container_width=True)
 
             # ── Diagnostic résidus ML ──────────────────────────
-            st.markdown("<div class='section-title'>🔬 Diagnostic des résidus ML</div>",
+            st.markdown("<div class='section-title'> Diagnostic des résidus ML</div>",
                         unsafe_allow_html=True)
             residuals_ml = y_test.values - y_pred_best
             r1ml, r2ml = st.columns(2)
@@ -1413,7 +1413,7 @@ with tab_ml:
                 st.plotly_chart(fig_hist_ml, use_container_width=True)
 
             # ── Comparaison Économétrie vs ML ──────────────────
-            st.markdown("<div class='section-title'>⚖️ Comparaison Économétrie vs Machine Learning</div>",
+            st.markdown("<div class='section-title'> Comparaison Économétrie vs Machine Learning</div>",
                         unsafe_allow_html=True)
 
             comp_fig = go.Figure(go.Bar(
@@ -1452,7 +1452,7 @@ with tab_ml:
 # ONGLET 5 — À PROPOS
 # ══════════════════════════════════════════════════════════════
 with tab_about:
-    st.markdown("<div class='hero-title' style='font-size:1.8rem;'>ℹ️ À propos du projet</div>",
+    st.markdown("<div class='hero-title' style='font-size:1.8rem;'> À propos du projet</div>",
                 unsafe_allow_html=True)
 
     a1, a2 = st.columns([1.3, 1])
@@ -1479,7 +1479,7 @@ with tab_about:
     with a2:
         st.markdown("""
         <div class='insight-box'>
-        <strong>🌍 Pays étudiés — Zone UEMOA</strong><br><br>
+        <strong> Pays étudiés — Zone UEMOA</strong><br><br>
         🇧🇯 Bénin<br>
         🇧🇫 Burkina Faso<br>
         🇨🇮 Côte d'Ivoire<br>
@@ -1488,15 +1488,15 @@ with tab_about:
         🇳🇪 Niger<br>
         🇸🇳 Sénégal<br>
         🇹🇬 Togo<br><br>
-        <strong>📅 Période :</strong> 2014 – 2025<br>
-        <strong>📊 Observations :</strong> 96 (panel équilibré)<br>
-        <strong>📋 Variables :</strong> 28 indicateurs<br>
+        <strong> Période :</strong> 2014 – 2025<br>
+        <strong> Observations :</strong> 96 (panel équilibré)<br>
+        <strong> Variables :</strong> 28 indicateurs<br>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class='insight-box' style='margin-top:12px;'>
-        <strong>📚 Références clés</strong><br><br>
+        <strong> Références clés</strong><br><br>
         • Jack, W., & Suri, T. (2016). <em>The long-run poverty and gender impacts of mobile money.</em> Science.<br>
         • Suri, T. (2017). <em>Mobile money.</em> Annual Review of Economics.<br>
         • Arellano, M., & Bond, S. (1991). <em>Some tests of specification for panel data.</em> Review of Economic Studies.<br>
