@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
-import os
+import os 
 
 st.set_page_config(page_title="UEMOA Mobile Money | Mémoire", layout="wide", page_icon="📱")
 
@@ -50,45 +50,118 @@ if page == "🏠 Accueil":
 
 # ===================== EXPLORATION =====================
 elif page == "📊 Exploration":
-    st.title("Exploration des Données")
-    tabs = st.tabs(["Statistiques", "Visualisations", "Corrélations", "Tests de Stationnarité"])
+    st.title("📊 Exploration des Données")
 
+    st.markdown("### 🎯 Sélectionnez le type de chaque variable")
+    st.info("Sélectionnez d'abord les variables **Quantitatives** (nombres réels) et **Qualitatives** (catégories ou codes).")
+
+    all_vars = [col for col in df.columns if col not in ['Country', 'ISO3']]
+
+    quanti_selected = st.multiselect(
+        "Variables **Quantitatives** (nombres réels)", 
+        all_vars, 
+        default=['GDP Growth (% annual)', 'MM Trans. % GDP', 'Investment % GDP', 'Trade % GDP']
+    )
+
+    quali_selected = st.multiselect(
+        "Variables **Qualitatives** (catégories ou codes)", 
+        [v for v in all_vars if v not in quanti_selected],
+        default=['Country']
+    )
+
+    if not quanti_selected and not quali_selected:
+        st.warning("Veuillez sélectionner au moins une variable.")
+        st.stop()
+
+    tabs = st.tabs(["Statistiques & Graphiques", "Matrice de Corrélation", "Heatmap"])
+
+    # ===================== STATISTIQUES & GRAPHES =====================
     with tabs[0]:
-        st.subheader("Statistiques Descriptives")
-        st.dataframe(df.describe().round(3), use_container_width=True)
+        st.subheader("Statistiques et Visualisations")
 
+        # Variables Quantitatives
+        if quanti_selected:
+            st.markdown("### 📈 Variables **Quantitatives**")
+            for var in quanti_selected:
+                st.markdown(f"#### {var}")
+
+                # Statistiques
+                stats = pd.DataFrame({
+                    "Statistique": ["Somme", "Moyenne", "Médiane", "Minimum", "Maximum", "Écart-type"],
+                    "Valeur": [
+                        df[var].sum(),
+                        df[var].mean(),
+                        df[var].median(),
+                        df[var].min(),
+                        df[var].max(),
+                        df[var].std()
+                    ]
+                })
+                st.dataframe(stats.round(3), use_container_width=True)
+
+                # Graphiques
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    fig1 = px.line(df, x='Year', y=var, color='Country', title=f"Évolution de {var}")
+                    st.plotly_chart(fig1, use_container_width=True)
+                    st.markdown('<div class="desc">Ce graphique en ligne montre l’évolution temporelle de la variable sur la période 2014-2025 pour chaque pays.</div>', unsafe_allow_html=True)
+
+                with col2:
+                    fig2 = px.histogram(df, x=var, color='Country', title=f"Distribution de {var}")
+                    st.plotly_chart(fig2, use_container_width=True)
+                    st.markdown('<div class="desc">Cet histogramme permet de visualiser la répartition et la concentration des valeurs de la variable.</div>', unsafe_allow_html=True)
+
+                with col3:
+                    fig3 = px.box(df, x='Country', y=var, title=f"Boxplot de {var} par pays")
+                    st.plotly_chart(fig3, use_container_width=True)
+                    st.markdown('<div class="desc">Le boxplot montre la dispersion, la médiane et les valeurs extrêmes (outliers) par pays.</div>', unsafe_allow_html=True)
+
+        # Variables Qualitatives
+        if quali_selected:
+            st.markdown("### 📊 Variables **Qualitatives**")
+            for var in quali_selected:
+                st.markdown(f"#### {var}")
+
+                # Statistiques
+                freq = df[var].value_counts().reset_index()
+                freq.columns = [var, "Effectif"]
+                freq["Fréquence (%)"] = (freq["Effectif"] / freq["Effectif"].sum() * 100).round(2)
+                freq["Mode"] = df[var].mode()[0] if not df[var].mode().empty else "—"
+
+                st.dataframe(freq, use_container_width=True)
+
+                # Graphiques
+                col1, col2 = st.columns(2)
+                with col1:
+                    fig_bar = px.bar(freq, x=var, y="Effectif", title=f"Barres - {var}")
+                    st.plotly_chart(fig_bar, use_container_width=True)
+                    st.markdown('<div class="desc">Ce graphique en barres compare les effectifs de chaque catégorie.</div>', unsafe_allow_html=True)
+
+                with col2:
+                    if len(freq) <= 6:  # Pie seulement si peu de catégories
+                        fig_pie = px.pie(freq, names=var, values="Effectif", title=f"Répartition - {var}")
+                        st.plotly_chart(fig_pie, use_container_width=True)
+                        st.markdown('<div class="desc">Ce diagramme circulaire montre la proportion de chaque catégorie.</div>', unsafe_allow_html=True)
+
+    # ===================== CORRÉLATION =====================
     with tabs[1]:
-        st.subheader("Graphiques Exploratoires")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            fig1 = px.line(df, x='Year', y='MM Trans. % GDP', color='Country', 
-                          title="Évolution des Transactions MM par Pays")
-            st.plotly_chart(fig1, use_container_width=True)
-            st.markdown('<div class="desc">Ce graphique montre la croissance rapide des transactions Mobile Money dans l’UEMOA, surtout après 2018.</div>', unsafe_allow_html=True)
-
-            fig2 = px.box(df, x='Country', y='GDP Growth (% annual)', title="Distribution de la Croissance PIB")
-            st.plotly_chart(fig2, use_container_width=True)
-
-        with col2:
-            fig3 = px.scatter(df, x='MM Trans. % GDP', y='GDP Growth (% annual)', 
-                             color='Country', trendline="ols", title="Relation MM vs Croissance")
-            st.plotly_chart(fig3, use_container_width=True)
-
-            fig4 = px.histogram(df, x='MM Trans. % GDP', color='Country', title="Distribution des Transactions MM")
-            st.plotly_chart(fig4, use_container_width=True)
-
-    with tabs[2]:
         st.subheader("Matrice de Corrélation")
-        numeric = df.select_dtypes(include=np.number).columns
-        corr = df[numeric].corr()
-        fig = px.imshow(corr.round(2), text_auto=True, title="Corrélation entre Variables")
+        if quanti_selected:
+            corr = df[quanti_selected].corr().round(3)
+            fig = px.imshow(corr, text_auto=True, title="Matrice de Corrélation (Variables Quantitatives)")
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('<div class="desc">Cette matrice montre les coefficients de corrélation linéaire entre les variables quantitatives sélectionnées. Plus la valeur est proche de 1 ou -1, plus la relation est forte.</div>', unsafe_allow_html=True)
+        else:
+            st.info("Aucune variable quantitative sélectionnée.")
+
+    # ===================== HEATMAP =====================
+    with tabs[2]:
+        st.subheader("Heatmap des Transactions Mobile Money")
+        pivot = df.pivot_table(values='MM Trans. % GDP', index='Country', columns='Year', aggfunc='mean')
+        fig = px.imshow(pivot, text_auto=True, title="Heatmap : Transactions Mobile Money (% du PIB)")
         st.plotly_chart(fig, use_container_width=True)
-
-    with tabs[3]:
-        st.subheader("Tests de Stationnarité (Panel)")
-        st.info("Levin-Lin-Chu et Im-Pesaran-Shin ont été réalisés dans le notebook. La plupart des variables sont stationnaires en différence première.")
-
+        st.markdown('<div class="desc">Cette heatmap permet de visualiser l’intensité des transactions Mobile Money par pays et par année. Les couleurs plus chaudes indiquent des valeurs plus élevées.</div>', unsafe_allow_html=True)
+        
 # ===================== ÉCONOMÉTRIE =====================
 elif page == "📈 Économétrie":
     st.title("Analyse Économétrique Complète")
