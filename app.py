@@ -195,7 +195,7 @@ div[data-testid="stDataFrameContainer"] {
 
 # ─── Chargement des données ───────────────────────────────────
 @st.cache_data
-def load_data():
+def load_default_data():
     df = pd.read_excel("data/UEMOA_MobileMoney_Panel_2014_2025.xlsx", header=1)
     df.columns = df.columns.str.replace("\n", " ").str.strip()
     df = df.dropna(subset=["Country"])
@@ -209,7 +209,37 @@ def load_data():
     df["Year"] = df["Year"].astype(int)
     return df
 
-df = load_data()
+@st.cache_data
+def load_uploaded_data(file_bytes, file_name):
+    """Charge un fichier uploadé (xlsx ou csv) et applique le même nettoyage."""
+    try:
+        if file_name.endswith(".csv"):
+            df = pd.read_csv(file_bytes)
+        else:
+            # Essaie d'abord header=1 (format de la base par défaut), sinon header=0
+            try:
+                df = pd.read_excel(file_bytes, header=1)
+                if "Country" not in df.columns and "Year" not in df.columns:
+                    df = pd.read_excel(file_bytes, header=0)
+            except Exception:
+                df = pd.read_excel(file_bytes, header=0)
+        df.columns = df.columns.str.replace("\n", " ").str.strip()
+        df = df.dropna(subset=["Country"])
+        for col in df.columns:
+            if col not in ["Country", "ISO3"]:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df.dropna(subset=["Year", "GDP Growth (% annual)"])
+        df["Year"] = df["Year"].astype(int)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+
+# ─── Gestion de l'upload dans la sidebar (avant tout le reste) ──
+if "df" not in st.session_state:
+    st.session_state["df"] = load_default_data()
+    st.session_state["data_source"] = "default"
+
+df = st.session_state["df"]
 countries = sorted(df["Country"].unique().tolist())
 years     = sorted(df["Year"].unique().tolist())
 
@@ -248,6 +278,79 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     st.markdown("** Filtres globaux**")
+    # ── Upload d'une base personnalisée ──────────────────────
+
+    st.markdown("<hr style='border-color:rgba(100,180,255,0.1);'>", unsafe_allow_html=True)
+
+    st.markdown("** Charger votre base de données**")
+
+    st.markdown("""
+
+    <div style='font-size:0.72rem; color:#7090b0; line-height:1.6; margin-bottom:10px;'>
+
+        Vous pouvez importer votre propre base. Elle doit avoir <strong>la même structure</strong>
+
+        que la base fournie : colonnes <code>Country</code>, <code>ISO3</code>, <code>Year</code>,
+
+        <code>GDP Growth (% annual)</code>, <code>MM Trans. % GDP</code>, <code>MM Trans. Volume</code>, etc.
+
+        Format accepté : <strong>.xlsx</strong> ou <strong>.csv</strong>.
+
+    </div>
+
+    """, unsafe_allow_html=True)
+
+    uploaded_file = st.file_uploader(
+
+        "Importer une base (.xlsx ou .csv)",
+
+        type=["xlsx", "csv"],
+
+        help="La base doit avoir la même structure que UEMOA_MobileMoney_Panel_2014_2025.xlsx"
+
+    )
+
+    if uploaded_file is not None:
+
+        df_up, err = load_uploaded_data(uploaded_file, uploaded_file.name)
+
+        if err:
+
+            st.error(f"❌ Erreur de chargement : {err}")
+
+        else:
+
+            if st.button(" Utiliser cette base"):
+
+                st.session_state["df"] = df_up
+
+                st.session_state["data_source"] = "uploaded"
+
+                st.cache_data.clear()
+
+                st.rerun()
+
+    if st.session_state.get("data_source") == "uploaded":
+
+        st.success(" Base importée active")
+
+        if st.button(" Revenir à la base par défaut"):
+
+            st.session_state["df"] = load_default_data()
+
+            st.session_state["data_source"] = "default"
+
+            st.cache_data.clear()
+
+            st.rerun()
+
+    else:
+
+        st.info(" Base par défaut active (UEMOA 2014–2025)")
+
+    st.markdown("<hr style='border-color:rgba(100,180,255,0.1);'>", unsafe_allow_html=True)
+
+    # ── fin section upload ────────────────────────────────────
     sel_countries = st.multiselect("Pays", countries, default=countries,
                                    help="Sélectionner les pays à afficher")
     sel_years = st.slider("Période", min_value=min(years), max_value=max(years),
