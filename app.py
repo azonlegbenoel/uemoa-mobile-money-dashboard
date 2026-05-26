@@ -277,24 +277,24 @@ with st.sidebar:
     <hr style='border-color:rgba(100,180,255,0.1); margin-bottom:20px;'>
     """, unsafe_allow_html=True)
 
-    st.markdown("** Filtres globaux**")
+    st.markdown("FILTRES GLOBAUX")
     # ── Upload d'une base personnalisée ──────────────────────
 
     st.markdown("<hr style='border-color:rgba(100,180,255,0.1);'>", unsafe_allow_html=True)
 
-    st.markdown("** Charger votre base de données**")
+    st.markdown("Informations pour charger votre base de données :")
 
     st.markdown("""
 
     <div style='font-size:0.72rem; color:#7090b0; line-height:1.6; margin-bottom:10px;'>
 
-        Vous pouvez importer votre propre base. Elle doit avoir <strong>la même structure</strong>
+        Vous pouvez importer votre propre base. Elle doit avoir la même structure
 
-        que la base fournie : colonnes <code>Country</code>, <code>ISO3</code>, <code>Year</code>,
+        que la base fournie : colonnes Country, ISO3, Year,
 
-        <code>GDP Growth (% annual)</code>, <code>MM Trans. % GDP</code>, <code>MM Trans. Volume</code>, etc.
+        GDP Growth (% annual), MM Trans. % GDP, MM Trans. Volume, etc.
 
-        Format accepté : <strong>.xlsx</strong> ou <strong>.csv</strong>.
+        Formats acceptés : .xlsx ou .csv
 
     </div>
 
