@@ -290,9 +290,9 @@ with st.sidebar:
 
         Vous pouvez importer votre propre base. Elle doit avoir la même structure
 
-        que la base fournie : colonnes Country, ISO3, Year,
+        que la base fournie par défaut ; avec les premieres colonnes suivantes : Country, ISO3(Code des pays), Year,
 
-        GDP Growth (% annual), MM Trans. % GDP, MM Trans. Volume, etc.
+        GDP Growth (% annual), MM Trans. % GDP, MM Trans. Volume, ...
 
         Formats acceptés : .xlsx ou .csv
 
